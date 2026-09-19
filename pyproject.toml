@@ -1,0 +1,27 @@
+[project]
+name = "eventhub-booking-drf"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "funlifew",email = "funlifewinpain@gmail.com"}
+]
+license = "MIT"
+requires-python = ">=3.14"
+dependencies = [
+    "django (>=6.1.1,<7.0.0)",
+    "djangorestframework (>=3.18.1,<4.0.0)",
+    "python-decouple (>=3.8,<4.0)",
+    "pillow (>=12.3.0,<13.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "ipython (>=9.17.1,<10.0.0)",
+    "ruff (>=0.16.8,<0.17.0)",
+    "django-debug-toolbar (>=8.0.0,<9.0.0)"
+]
