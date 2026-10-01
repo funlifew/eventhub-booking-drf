@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
+
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -41,6 +43,7 @@ INSTALLED_APPS = [
     
     # Third-Party Applications
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
     
     # Local Applications
     'apps.core',
@@ -109,6 +112,46 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+
+    "DEFAULT_THROTTLE_RATES": {
+        "register": "5/hour",
+        "login": "10/minute",
+        "token_refresh": "30/minute",
+        "resend_activation": "3/hour",
+        "activation": "20/hour",
+        "password_reset": "5/hour",
+        "password_reset_confirm": "10/hour",
+    },
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(
+        minutes=15,
+    ),
+
+    "REFRESH_TOKEN_LIFETIME": timedelta(
+        days=7,
+    ),
+
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+
+    "UPDATE_LAST_LOGIN": False,
+
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+
+    "AUTH_HEADER_TYPES": (
+        "Bearer",
+    ),
+
+    "CHECK_REVOKE_TOKEN": True,
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.1/topics/i18n/
@@ -127,6 +170,9 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
@@ -138,3 +184,13 @@ MAILERS = {
 }
 
 AUTH_USER_MODEL = "users.User"
+
+DEFAULT_FROM_EMAIL = config(
+    "DEFAULT_FROM_EMAIL",
+    default="EventHub <noreply@eventhub.local>",
+)
+
+# Django's PasswordResetTokenGenerator timeout.
+# We also use the same secure token mechanism for account activation.
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24  # 24 hours
+
