@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+
+echo ""
+echo "======================================"
+echo " EventHub pre-push checks"
+echo "======================================"
+echo ""
+
+echo "→ Running Django system checks..."
+poetry run python manage.py check
+
+echo ""
+echo "→ Checking for missing migrations..."
+poetry run python manage.py makemigrations --check --dry-run
+
+echo ""
+echo "→ Running all tests..."
+poetry run python manage.py test --verbosity 2
+
+echo ""
+echo "======================================"
+echo " ✅ All checks passed"
+echo " 🚀 Continuing git push..."
+echo "======================================"
+echo ""
