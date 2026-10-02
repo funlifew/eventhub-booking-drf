@@ -1,9 +1,9 @@
 from django.conf import settings
+from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import Q
 
 from apps.core.models import TimeStampedModel
-
-# Create your models here.
 
 class Venue(TimeStampedModel):
     name = models.CharField(
@@ -12,7 +12,7 @@ class Venue(TimeStampedModel):
     
     country = models.CharField(
         max_length=100,
-        default='Iran',
+        default="Iran",
     )
     
     city = models.CharField(
@@ -25,7 +25,13 @@ class Venue(TimeStampedModel):
     capacity = models.PositiveIntegerField(
         null=True,
         blank=True,
-        help_text='Maximum physical capacity of the venue.',
+        validators=[
+            MinValueValidator(1),
+        ],
+        help_text=(
+            "Maximum physical capacity "
+            "of the venue."
+        ),
     )
     
     created_by = models.ForeignKey(
@@ -40,21 +46,42 @@ class Venue(TimeStampedModel):
         default=True,
     )
     
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-    )
-    
-    updated_at = models.DateTimeField(
-        auto_now=True,
-    )
-    
     class Meta:
-        ordering = ['name']
-
-        indexes = [
-            models.Index(fields=['city']),
-            models.Index(fields=['is_active']),
+        ordering = [
+            'name',
+            'id',
         ]
+        
+        indexes = [
+            models.Index(
+                fields=[
+                    'city',
+                    'is_active',
+                ],
+            ),
+            models.Index(
+                fields=[
+                    "country",
+                    "city",
+                ],
+            ),
+            models.Index(
+                fields=[
+                    'is_active',
+                ],
+            ),
+        ]
+        
+        constraints = [
+            models.CheckConstraint(
+                condition=(
+                    Q(capacity__isnull=True)
+                    | Q(capacity__gt=0)
+                ),
+                name="venues_capacity_gt_zero_or_null",
+            ),
+        ]
+    
     
     def __str__(self):
         return f"{self.name} - {self.city}"
