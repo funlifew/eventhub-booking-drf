@@ -1,8 +1,20 @@
-from django.urls import path
-from . import views
+from rest_framework.routers import (
+    SimpleRouter,
+)
 
-app_name = 'venues'
+from .views import VenueViewSet
 
-urlpatterns = [
-    
-]
+
+app_name = "venues"
+
+
+router = SimpleRouter()
+
+router.register(
+    "",
+    VenueViewSet,
+    basename="venue",
+)
+
+
+urlpatterns = router.urls
