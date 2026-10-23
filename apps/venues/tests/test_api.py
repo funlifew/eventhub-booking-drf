@@ -418,7 +418,7 @@ class VenueDetailTests(
         Event.objects.create(
             title="Django Conference",
             description="DRF event",
-            organizer=self.active,
+            venue=self.active,
             start_at=(
                 now
                 + timedelta(days=1)
